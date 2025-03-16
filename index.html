@@ -7,7 +7,76 @@
     <title>Ressursarkiv</title>
   </head>
   <body>
+    <main>
+      <h1 id="kategoriinnhold"></h1>
+      <nav id="kategorier"></nav>
+      <article id="white-box">
+          <div id="innhold"></div>
+          </article>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-  </body>
+    </main>
+    </body>
+
+    <script>
+const kategorier = document.getElementById('kategorier');
+const whiteBox = document.querySelector('.white-box');
+
+
+let kategoriinnhold = document.getElementById('kategoriinnhold');
+let innhold = document.getElementById('innhold');
+
+if (!kategoriinnhold) {
+    kategoriinnhold = document.createElement('div');
+    kategoriinnhold.id = 'kategoriinnhold';
+}
+
+if (!innhold) {
+    innhold = document.createElement('div');
+    innhold.id = 'innhold';
+}
+
+
+whiteBox.innerHTML = '';
+whiteBox.appendChild(kategoriinnhold);
+whiteBox.appendChild(innhold);
+
+resources.forEach(resource => {
+    const button = document.createElement('button');
+    button.dataset.kategori = resource.category;
+    button.textContent = resource.category;
+    kategorier.appendChild(button);
+});
+
+const kategoriButtons = kategorier.querySelectorAll('button');
+
+kategoriButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const kategori = button.dataset.kategori;
+
+        kategoriButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        if (kategori === 'alle') {
+            kategoriinnhold.textContent = '';
+            innhold.innerHTML = '';
+        } else {
+            const resource = resources.find(r => r.category === kategori);
+            kategoriinnhold.textContent = resource ? resource.text : '';
+
+            innhold.innerHTML = '';
+            resources.filter(resource => resource.category === kategori).forEach(resource => {
+                const article = document.createElement('article');
+                article.innerHTML = `<h2>${resource.category}</h2><p>${resource.text}</p><ul>${resource.sources.map(source => `<li><a href="${source.url}" target="_blank">${source.title}</a></li>`).join('')}</ul>`;
+                innhold.appendChild(article);
+            });
+        }
+    });
+});
+
+const htmlButton = document.querySelector('#kategorier button[data-kategori="HTML"]');
+if (htmlButton) {
+    htmlButton.click();
+}
+    </script>
 </html>
